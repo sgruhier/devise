@@ -11,9 +11,10 @@ class DeviseFormtasticViewsGenerator < Rails::Generator::Base
 
       Dir[File.join(@source_root, "app", "formtastic_views", "**/*.erb")].each do |file|
         file = file.gsub(@source_root, "")[1..-1]
-
-        m.directory  File.dirname(file)
-        m.file       file, file.gsub('formtastic_views', 'views')
+        dest_file = file.gsub('formtastic_views', 'views')
+        
+        m.directory  File.dirname(dest_file)
+        m.file       file, dest_file
       end
 
       m.directory "config/locales"
