@@ -1,0 +1,24 @@
+<h2><%= t(:'devise.sessions.sign_in_title') %></h2>
+
+<%- semantic_form_for resource_name, resource, :url => session_path(resource_name) do |f| -%>
+  <%- f.inputs do  -%>
+    <%= f.input :email %>
+    <%= f.input :password, :as => :password %>
+
+    <%- if devise_mapping.rememberable? -%>
+      <%= f.input :remember_me, :as => :boolean %>
+    <%- end -%>
+  <%- end -%>
+
+  <%- f.buttons do -%>
+    <%= f.commit_button t(:'devise.sessions.submit') %>
+  <%- end -%>
+<% end -%>
+
+<%- if devise_mapping.recoverable? -%>
+  <%= link_to t(:'devise.sessions.forgot_password'), new_password_path(resource_name) %><br />
+<%- end -%>
+
+<%- if devise_mapping.confirmable? %>
+  <%= link_to  t(:'devise.sessions.confirmation_hint'), new_confirmation_path(resource_name) %><br />
+<%- end -%>

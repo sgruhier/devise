@@ -1,0 +1,17 @@
+<h2><%= t(:'devise.passwords.forgot_title') %></h2>
+
+<% semantic_form_for resource_name, resource, :url => password_path(resource_name) do |f| %>
+  <%- f.inputs do -%>
+    <%= f.input :email %>
+  <%- end -%>
+  
+  <%- f.buttons do -%>
+    <%= f.commit_button t(:'devise.passwords.submit_request') %>
+  <%- end -%>
+<%- end -%>
+
+<%= link_to t(:'devise.sessions.sign_in'), new_session_path(resource_name) %><br />
+
+<%- if devise_mapping.confirmable? -%>
+  <%= link_to  t(:'devise.sessions.confirmation_hint'), new_confirmation_path(resource_name) %><br />
+<%- end -%>
