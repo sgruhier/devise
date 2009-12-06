@@ -1,3 +1,9 @@
+== 0.6.3
+
+* bug fix
+  * Added trackable to migrations
+  * Allow inflections to work
+
 == 0.6.2
 
 * enhancements
