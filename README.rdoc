@@ -42,6 +42,10 @@ Configure warden and devise gems inside your app:
   config.gem 'warden'
   config.gem 'devise'
 
+Run the generator:
+
+	ruby script/generate devise_install
+
 And you're ready to go.
 
 == Basic Usage
@@ -223,9 +227,7 @@ Take a look at our locale file to check all available messages.
 
 == Test helpers
 
-Devise includes some tests helpers for functional specs. To use them, you just
-need to include Devise::TestHelpers in your test class and use the sign_in and
-sign_out method. Such methods have the same signature as in controllers:
+Devise includes some tests helpers for functional specs. To use them, you just need to include Devise::TestHelpers in your test class and use the sign_in and sign_out method. Such methods have the same signature as in controllers:
 
   sign_in :user, @user   # sign_in(scope, resource)
   sign_in @user          # sign_in(resource)
@@ -233,12 +235,13 @@ sign_out method. Such methods have the same signature as in controllers:
   sign_out :user         # sign_out(scope)
   sign_out @user         # sign_out(resource)
 
-You can include the Devise Test Helpers in all of your tests by adding the
-following to the bottom of your test/test_helper.rb or spec/spec_helper.rb file:
+You can include the Devise Test Helpers in all of your tests by adding the following to the bottom of your test/test_helper.rb or spec/spec_helper.rb file:
 
   class ActionController::TestCase
     include Devise::TestHelpers
   end
+
+Do not use such helpers for integration tests like Cucumber, Webrat... Just fill in the form or explicitly set the user in session. For more tips, check the wiki (http://wiki.github.com/plataformatec/devise).
 
 == Migrating from other solutions
 
