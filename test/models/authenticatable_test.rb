@@ -27,6 +27,13 @@ class AuthenticatableTest < ActiveSupport::TestCase
     assert_equal salt, user.password_salt
   end
 
+  test 'should not care about empty password on update' do
+    user = create_user
+    user.update_attributes(:email => "jose.valim+updated@gmail.com", :password => "")
+    user.reload
+    assert_equal user.email, "jose.valim+updated@gmail.com"
+  end
+
   test 'should generate a base64 hash using SecureRandom for password salt' do
     ActiveSupport::SecureRandom.expects(:base64).with(15).returns('friendly_token')
     assert_equal 'friendly_token', new_user.password_salt
@@ -151,5 +158,31 @@ class AuthenticatableTest < ActiveSupport::TestCase
     assert_raise RuntimeError, /ancestors/ do
       User.serialize_from_session([Admin, user.id])
     end
+  end
+
+  test 'should respond to old password' do
+    assert new_user.respond_to?(:old_password)
+  end
+
+  test 'should update password with valid old password' do
+    user = create_user
+    assert user.update_with_password(:old_password => '123456',
+      :password => 'pass321', :password_confirmation => 'pass321')
+    assert user.reload.valid_password?('pass321')
+  end
+
+  test 'should add an error to old password when it is invalid' do
+    user = create_user
+    assert_not user.update_with_password(:old_password => 'other',
+      :password => 'pass321', :password_confirmation => 'pass321')
+    assert_equal 'is invalid', user.errors[:old_password]
+    assert user.reload.valid_password?('123456')
+  end
+
+  test 'should not update password with invalid confirmation' do
+    user = create_user
+    assert_not user.update_with_password(:old_password => '123456',
+      :password => 'pass321', :password_confirmation => 'other')
+    assert user.reload.valid_password?('123456')
   end
 end

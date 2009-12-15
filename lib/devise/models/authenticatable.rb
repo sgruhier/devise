@@ -47,7 +47,7 @@ module Devise
           extend ClassMethods
           extend SessionSerializer
 
-          attr_reader :password
+          attr_reader :password, :old_password
           attr_accessor :password_confirmation
         end
       end
@@ -62,9 +62,28 @@ module Devise
         end
       end
 
-      # Verifies whether an incoming_password (ie from login) is the user password.
+      # Verifies whether an incoming_password (ie from sign in) is the user password.
       def valid_password?(incoming_password)
         password_digest(incoming_password) == encrypted_password
+      end
+
+      # Update record attributes when :old_password matches, otherwise returns
+      # error on :old_password.
+      def update_with_password(params={})
+        if valid_password?(params[:old_password])
+          update_attributes(params)
+        else
+          errors.add(:old_password, :invalid)
+          false
+        end
+      end
+
+      # Overwrite update_attributes to not care for blank passwords.
+      def update_attributes(attributes)
+        [:password, :password_confirmation].each do |k|
+          attributes.delete(k) unless attributes[k].present?
+        end
+        super
       end
 
       protected
