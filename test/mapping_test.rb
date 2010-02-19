@@ -4,7 +4,6 @@ class MappingTest < ActiveSupport::TestCase
 
   test 'store options' do
     mapping = Devise.mappings[:user]
-
     assert_equal User,                mapping.to
     assert_equal User.devise_modules, mapping.for
     assert_equal :users,              mapping.as
@@ -14,8 +13,8 @@ class MappingTest < ActiveSupport::TestCase
     assert_equal :admin_area, Devise.mappings[:admin].as
   end
 
-  test 'allow custom singular to be given' do
-    assert_equal :organizers, Devise.mappings[:manager].as
+  test 'allow custom scope to be given' do
+    assert_equal :accounts, Devise.mappings[:manager].as
   end
 
   test 'allows a controller depending on the mapping' do
@@ -63,22 +62,26 @@ class MappingTest < ActiveSupport::TestCase
 
   test 'return default path names' do
     mapping = Devise.mappings[:user]
-    assert_equal 'sign_in', mapping.path_names[:sign_in]
-    assert_equal 'sign_out', mapping.path_names[:sign_out]
-    assert_equal 'password', mapping.path_names[:password]
+    assert_equal 'sign_in',      mapping.path_names[:sign_in]
+    assert_equal 'sign_out',     mapping.path_names[:sign_out]
+    assert_equal 'password',     mapping.path_names[:password]
     assert_equal 'confirmation', mapping.path_names[:confirmation]
+    assert_equal 'sign_up',      mapping.path_names[:sign_up]
+    assert_equal 'unlock',       mapping.path_names[:unlock]
   end
 
   test 'allow custom path names to be given' do
-    mapping = Devise.mappings[:account]
-    assert_equal 'login', mapping.path_names[:sign_in]
-    assert_equal 'logout', mapping.path_names[:sign_out]
-    assert_equal 'secret', mapping.path_names[:password]
+    mapping = Devise.mappings[:manager]
+    assert_equal 'login',        mapping.path_names[:sign_in]
+    assert_equal 'logout',       mapping.path_names[:sign_out]
+    assert_equal 'secret',       mapping.path_names[:password]
     assert_equal 'verification', mapping.path_names[:confirmation]
+    assert_equal 'register',     mapping.path_names[:sign_up]
+    assert_equal 'unblock',      mapping.path_names[:unlock]
   end
 
   test 'has an empty path as default path prefix' do
-    mapping = Devise.mappings[:account]
+    mapping = Devise.mappings[:user]
     assert_equal '/', mapping.path_prefix
   end
 
@@ -88,31 +91,13 @@ class MappingTest < ActiveSupport::TestCase
   end
 
   test 'retrieve as from the proper position' do
-    assert_equal 1, Devise.mappings[:account].as_position
+    assert_equal 1, Devise.mappings[:user].as_position
     assert_equal 2, Devise.mappings[:manager].as_position
   end
 
-  test 'raw path is returned' do
-    assert_equal '/account', Devise.mappings[:account].raw_path
-    assert_equal '/:locale/organizers', Devise.mappings[:manager].raw_path
-  end
-
-  test 'parsed path is returned' do
-    begin
-      Devise.default_url_options {{ :locale => I18n.locale }}
-      assert_equal '/account', Devise.mappings[:account].parsed_path
-      assert_equal '/en/organizers', Devise.mappings[:manager].parsed_path
-    ensure
-      Devise.default_url_options {{ }}
-    end
-  end
-
-  test 'should have default route options' do
-    assert_equal({}, Devise.mappings[:user].route_options)
-  end
-
-  test 'should allow passing route options to devise routes' do
-    assert_equal({ :requirements => { :extra => 'value' } }, Devise.mappings[:manager].route_options)
+  test 'path is returned with path prefix and as' do
+    assert_equal '/users', Devise.mappings[:user].path
+    assert_equal '/:locale/accounts', Devise.mappings[:manager].path
   end
 
   test 'magic predicates' do
@@ -121,6 +106,7 @@ class MappingTest < ActiveSupport::TestCase
     assert mapping.confirmable?
     assert mapping.recoverable?
     assert mapping.rememberable?
+    assert mapping.registerable?
 
     mapping = Devise.mappings[:admin]
     assert mapping.authenticatable?

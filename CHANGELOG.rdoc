@@ -1,7 +1,133 @@
+== 1.1.pre
+
 * enhancements
-  * Do not care about blank passwords on update
+  * Rails 3 compatibility.
+  * All controllers and views are namespaced, for example: Devise::SessionsController and "devise/sessions".
+  * You can specify the controller in routes and have specific controllers for each role.
+  * Devise.orm is deprecated. This reduces the required API to hook your ORM with devise.
+  * Use metal for failure app.
+  * HTML e-mails now have proper formatting.
+
+* deprecations
+  * Rails 3 compatible only.
+  * Scoped views are no longer "sessions/users/new". Now use "users/sessions/new".
+  * Devise.orm is deprecated, just require "devise/orm/YOUR_ORM" instead.
+  * Devise.default_url_options is deprecated, just modify ApplicationController.default_url_options.
+
+== 1.0.2
+
+* enhancements
+  * Allows you set mailer content type (by github.com/glennr)
+
+* bug fix
+  * Uses the same content type as request on http authenticatable 401 responses
+
+== 1.0.1
+
+* enhancements
+  * HttpAuthenticatable is not added by default automatically.
+  * Avoid mass assignment error messages with current password.
+
+* bug fix
+  * Fixed encryptors autoload
+
+== 1.0.0
+
+* deprecation
+  * :old_password in update_with_password is deprecated, use :current_password instead
+
+* enhancements
+  * Added Registerable
+  * Added Http Basic Authentication support
+  * Allow scoped_views to be customized per controller/mailer class
+  * [#99] Allow authenticatable to used in change_table statements
+
+== 0.9.2
+
+* bug fix
+  * Ensure inactive user cannot sign in
+  * Ensure redirect to proper url after sign up
+
+* enhancements
+  * Added gemspec to repo
+  * Added token authenticatable (by github.com/grimen)
+
+== 0.9.1
+
+* bug fix
+  * Allow bigger salt size (by github.com/jgeiger)
+  * Fix relative url root
+
+== 0.9.0
+
+* deprecation
+  * devise :all is deprecated
+  * :success and :failure flash messages are now :notice and :alert
+
+* enhancements
+  * Added devise lockable (by github.com/mhfs)
+  * Warden 0.9.0 compatibility
+  * Mongomapper 0.6.10 compatibility
+  * Added Devise.add_module as hooks for extensions (by github.com/grimen)
+  * Ruby 1.9.1 compatibility (by github.com/grimen)
+
+* bug fix
+  * Accept path prefix not starting with slash
+  * url helpers should rely on find_scope!
+
+== 0.8.2
+
+* enhancements
+  * Allow Devise.mailer_sender to be a proc (by github.com/grimen)
+
+* bug fix
+  * Fix bug with passenger, update is required to anyone deploying on passenger (by github.com/dvdpalm)
+
+== 0.8.1
+
+* enhancements
+  * Move salt to encryptors
+  * Devise::Lockable
+  * Moved view links into partial and I18n'ed them
+
+* bug fix
+  * Bcrypt generator was not being loaded neither setting the proper salt
+
+== 0.8.0
+
+* enhancements
+  * Warden 0.8.0 compatibility
+  * Add an easy for map.connect "sign_in", :controller => "sessions", :action => "new" to work
+  * Added :bcrypt encryptor (by github.com/capotej)
+
+* bug fix
+  * sign_in_count is also increased when user signs in via password change, confirmation, etc..
+  * More DataMapper compatibility (by github.com/lancecarlson)
+
+* deprecation
+  * Removed DeviseMailer.sender
+
+== 0.7.5
+
+* enhancements
+  * Set a default value for mailer to avoid find_template issues
+  * Add models configuration to MongoMapper::EmbeddedDocument as well
+
+== 0.7.4
+
+* enhancements
+  * Extract Activatable from Confirmable
+  * Decouple Serializers from Devise modules
+
+== 0.7.3
+
+* bug fix
+  * Give scope to the proper model validation
+
+* enhancements
   * Mail views are scoped as well
   * Added update_with_password for authenticatable
+  * Allow render_with_scope to accept :controller option
 
 == 0.7.2
 

@@ -1,44 +1,22 @@
 ENV["RAILS_ENV"] = "test"
-require File.join(File.dirname(__FILE__), 'rails_app', 'config', 'environment')
+DEVISE_ORM = (ENV["DEVISE_ORM"] || :active_record).to_sym
 
-require 'test_help'
-require 'webrat'
+puts "\n==> Devise.orm = #{DEVISE_ORM.inspect}"
+
+require File.expand_path('../rails_app/config/application', __FILE__)
+require File.expand_path("../orm/#{DEVISE_ORM}", __FILE__)
+
 require 'mocha'
-
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 ActionMailer::Base.delivery_method = :test
 ActionMailer::Base.perform_deliveries = true
 ActionMailer::Base.default_url_options[:host] = 'test.com'
-
-ActiveRecord::Migration.verbose = false
-ActiveRecord::Base.logger = Logger.new(nil)
-ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
-
-ActiveRecord::Schema.define(:version => 1) do
-  [:users, :admins, :accounts].each do |table|
-    create_table table do |t|
-      t.authenticatable :null => table == :admins
-
-      if table != :admin
-        t.string :username
-        t.confirmable
-        t.recoverable
-        t.rememberable
-        t.trackable
-      end
-
-      t.timestamps
-    end
-  end
-end
 
 Webrat.configure do |config|
   config.mode = :rails
   config.open_error_files = false
 end
 
-class ActiveSupport::TestCase
-  self.use_transactional_fixtures = true
-  self.use_instantiated_fixtures  = false
-end
+# Add support to load paths so we can overwrite broken webrat setup
+$:.unshift File.expand_path('../support', __FILE__)
+Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }

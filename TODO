@@ -1,1 +1,2 @@
-* Make test run with different ORMs
+* Make test run with DataMapper
+* Extract Activatable tests from Confirmable

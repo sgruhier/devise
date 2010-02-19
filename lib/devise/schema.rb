@@ -12,9 +12,14 @@ module Devise
       null       = options[:null] || false
       encryptor  = options[:encryptor] || (respond_to?(:encryptor) ? self.encryptor : :sha1)
 
-      apply_schema :email,              String, :null => null, :limit => 100
+      apply_schema :email,              String, :null => null
       apply_schema :encrypted_password, String, :null => null, :limit => Devise::ENCRYPTORS_LENGTH[encryptor]
-      apply_schema :password_salt,      String, :null => null, :limit => 20
+      apply_schema :password_salt,      String, :null => null
+    end
+
+    # Creates authentication_token.
+    def token_authenticatable
+      apply_schema :authentication_token, String, :limit => 20
     end
 
     # Creates confirmation_token, confirmed_at and confirmation_sent_at.
@@ -43,6 +48,13 @@ module Devise
       apply_schema :last_sign_in_at,    DateTime
       apply_schema :current_sign_in_ip, String
       apply_schema :last_sign_in_ip,    String
+    end
+
+    # Creates failed_attempts, unlock_token and locked_at
+    def lockable
+      apply_schema :failed_attempts, Integer, :default => 0
+      apply_schema :unlock_token,    String, :limit => 20
+      apply_schema :locked_at,       DateTime
     end
 
     # Overwrite with specific modification to create your own schema.

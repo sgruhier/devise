@@ -1,9 +1,8 @@
-require 'digest/sha1'
-require 'devise/serializers/rememberable'
+require 'devise/strategies/rememberable'
+require 'devise/hooks/rememberable'
 
 module Devise
   module Models
-
     # Rememberable manages generating and clearing token for remember the user
     # from a saved cookie. Rememberable also has utility methods for dealing
     # with serializing the user into the cookie and back from the cookie, trying
@@ -31,21 +30,18 @@ module Devise
     #   # lookup the user based on the incoming cookie information
     #   User.serialize_from_cookie(cookie_string)
     module Rememberable
+      extend ActiveSupport::Concern
 
-      def self.included(base)
-        base.class_eval do
-          extend ClassMethods
-
-          # Remember me option available in after_authentication hook.
-          attr_accessor :remember_me
-        end
+      included do
+        # Remember me option available in after_authentication hook.
+        attr_accessor :remember_me
       end
 
       # Generate a new remember token and save the record without validations.
       def remember_me!
         self.remember_token = Devise.friendly_token
         self.remember_created_at = Time.now.utc
-        save(false)
+        save(:validate => false)
       end
 
       # Removes the remember token only if it exists, and save the record
@@ -54,7 +50,7 @@ module Devise
         if remember_token
           self.remember_token = nil
           self.remember_created_at = nil
-          save(false)
+          save(:validate => false)
         end
       end
 
@@ -75,15 +71,15 @@ module Devise
 
       module ClassMethods
         # Create the cookie key using the record id and remember_token
-        def serialize_into_cookie(rememberable)
-          "#{rememberable.id}::#{rememberable.remember_token}"
+        def serialize_into_cookie(record)
+          "#{record.id}::#{record.remember_token}"
         end
 
         # Recreate the user based on the stored cookie
         def serialize_from_cookie(cookie)
-          rememberable_id, remember_token = cookie.split('::')
-          rememberable = find(:first, :conditions => { :id => rememberable_id }) if rememberable_id
-          rememberable if rememberable.try(:valid_remember_token?, remember_token)
+          record_id, record_token = cookie.split('::')
+          record = find(:first, :conditions => { :id => record_id }) if record_id
+          record if record.try(:valid_remember_token?, record_token)
         end
 
         Devise::Models.config(self, :remember_for)

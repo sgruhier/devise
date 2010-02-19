@@ -4,7 +4,7 @@ class ConfirmationInstructionsTest < ActionMailer::TestCase
 
   def setup
     setup_mailer
-    DeviseMailer.sender = 'test@example.com'
+    Devise.mailer_sender = 'test@example.com'
   end
 
   def user
@@ -59,7 +59,22 @@ class ConfirmationInstructionsTest < ActionMailer::TestCase
 
   test 'renders a scoped if scoped_views is set to true' do
     swap Devise, :scoped_views => true do
-      assert_equal user.email, mail.body
+      assert_equal user.email, mail.body.decoded
+    end
+  end
+
+  test 'renders a scoped if scoped_views is set in the mailer class' do
+    begin
+      Devise::Mailer.scoped_views = true
+      assert_equal user.email, mail.body.decoded
+    ensure
+      Devise::Mailer.send :remove_instance_variable, :@scoped_views
+    end
+  end
+
+  test 'mailer sender accepts a proc' do
+    swap Devise, :mailer_sender => lambda { "another@example.com" } do
+      assert_equal ['another@example.com'], mail.from
     end
   end
 end
